@@ -1,0 +1,87 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage xmlns="http://xamarin.com/schemas/2014/forms"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             x:Class="RobotApp.Views.AboutPage">
+    <ContentPage.Resources>
+        <Color x:Key="Primary">#96d1ff</Color>
+        <Color x:Key="LightTextColor">#999999</Color>
+    </ContentPage.Resources>
+
+    <ScrollView>
+        <Grid>
+            <Grid.RowDefinitions>
+                <RowDefinition Height="Auto" />
+                <RowDefinition Height="*" />
+            </Grid.RowDefinitions>
+            <StackLayout BackgroundColor="{StaticResource Primary}" 
+                         VerticalOptions="FillAndExpand"
+                         Padding="0,40,0,40">
+                <Image Source="logo.png"
+                              VerticalOptions="Center"
+                              HorizontalOptions="Center"
+                              HeightRequest="150" />
+
+            </StackLayout>
+            <ScrollView Grid.Row="1">
+                <StackLayout Orientation="Vertical" 
+                             Padding="16,40,16,40"
+                             Spacing="10">
+                    <Label FontSize="22">
+                        <Label.FormattedText>
+                            <FormattedString>
+                                <FormattedString.Spans>
+                                    <Span Text="RobotApp" 
+                                          FontAttributes="Bold" 
+                                          FontSize="22" />
+                                </FormattedString.Spans>
+                            </FormattedString>
+                        </Label.FormattedText>
+                    </Label>
+                    <Label>Witaj na stronie głównej aplikacji do sterowania robotem mobilnym</Label>
+                    <Label>Kliknij w przycisk w lewym górnym rogu aby rozwinąc menu i przejść do innej zakładki</Label>
+                    <Label>
+                        <Label.FormattedText>
+                            <FormattedString>
+                                <FormattedString.Spans>
+                                    <Span Text="Aplikacja została napisana w C#/XAML przy użyciu " />
+                                    <Span Text="Platformy Xamarin" 
+                                              FontAttributes="Bold" 
+                                              TextColor="Blue" 
+                                              TextDecorations="Underline">
+                                        <Span.GestureRecognizers>
+                                            <TapGestureRecognizer Command="{Binding TapCommand, Mode=OneWay}"
+                                                                     CommandParameter="https://docs.microsoft.com/en-us/xamarin/xamarin-forms/" />
+                                        </Span.GestureRecognizers>
+                                    </Span>
+                                    <Span Text="." />
+                                </FormattedString.Spans>
+                            </FormattedString>
+                        </Label.FormattedText>
+                    </Label>
+                    <Label>
+                        <Label.FormattedText>
+                            <FormattedString>
+                                <FormattedString.Spans>
+                                    <Span Text="Konstrukcja robota opiera się na układzie " />
+                                    <Span Text="Arduino" 
+                                              FontAttributes="Bold" 
+                                              TextColor="Blue" 
+                                              TextDecorations="Underline">
+                                        <Span.GestureRecognizers>
+                                            <TapGestureRecognizer Command="{Binding TapCommand, Mode=OneWay}"
+                                                                     CommandParameter="https://www.arduino.cc/" />
+                                        </Span.GestureRecognizers>
+                                    </Span>
+                                    <Span Text="." />
+                                </FormattedString.Spans>
+                            </FormattedString>
+                        </Label.FormattedText>
+                    </Label>
+                    <Label>Autorami aplikacji są:</Label>
+                    <Label>Patryk Panasiuk</Label>
+                    <Label>Maciej Rybarczuk</Label>
+                </StackLayout>
+            </ScrollView>
+        </Grid>
+    </ScrollView>
+</ContentPage>

@@ -1,0 +1,23 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage xmlns="http://xamarin.com/schemas/2014/forms"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml" 
+             xmlns:oxy="clr-namespace:OxyPlot.Xamarin.Forms;assembly=OxyPlot.Xamarin.Forms"
+             x:Class="RobotApp.Views.AutoPage">
+    <ContentPage.Content>
+        <Grid>
+            <Grid.RowDefinitions>
+                <RowDefinition Height="auto"/>
+                <RowDefinition Height="auto"/>
+                <RowDefinition Height="*"/>
+            </Grid.RowDefinitions>
+            <Label Text="Status: Połączono z HC-05"/>
+            <StackLayout Grid.Row="1" Orientation="Horizontal" HorizontalOptions="FillAndExpand">
+                <Button Text="Zapisz mape" IsEnabled="True" Clicked="Button_Clicked"/>
+                <Button Text="TestButton" IsEnabled="True" Clicked="Button_Clicked2"/>
+                <Label>Przesuń przełącznik aby zatrzymać pracę robota</Label>
+                <Switch IsToggled="True"></Switch>
+            </StackLayout>
+            <oxy:PlotView Grid.Row="2" Model="{Binding Model}" VerticalOptions="Center" HorizontalOptions="Center" />
+        </Grid>
+    </ContentPage.Content>
+</ContentPage>

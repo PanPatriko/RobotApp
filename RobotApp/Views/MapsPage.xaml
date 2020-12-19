@@ -1,0 +1,20 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage xmlns="http://xamarin.com/schemas/2014/forms"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             x:Class="RobotApp.Views.MapsPage">
+    <ContentPage.Content>
+        <StackLayout>
+            <Label>Kliknij aby zobaczyć szczegółowe informacje</Label>
+            <ListView x:Name="Maps" ItemTapped="ListView_ItemTapped">
+                <ListView.ItemsSource>
+                    <x:Array Type="{x:Type x:String}">
+                        <x:String>Mapa 1</x:String>
+                        <x:String>Mapa 2</x:String>
+                        <x:String>Mapa 3</x:String>
+                        <x:String>Mapa 4</x:String>
+                    </x:Array>
+                </ListView.ItemsSource>
+            </ListView>
+        </StackLayout>
+    </ContentPage.Content>
+</ContentPage>
