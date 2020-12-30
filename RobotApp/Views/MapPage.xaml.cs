@@ -20,9 +20,7 @@ namespace RobotApp.Views
             InitializeComponent();
             oxyPlotViewModel = new OxyPlotViewModel();
             BindingContext = oxyPlotViewModel;
-            var isZebraDevice = DependencyService.Get<IDevice>().IsZebraDevice();
-            MapName.Text = s + " " + isZebraDevice.ToString();
-
+            MapName.Text = s;
         }
     }
 }

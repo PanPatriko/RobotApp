@@ -9,14 +9,20 @@ using Android.OS;
 using Android.Bluetooth;
 using Xamarin.Forms;
 using RobotApp.Views;
+using Android.Content;
+using Android;
+using Android.Support.V4.Content;
+using Android.Support.V4.App;
+using System.IO;
+using System.Diagnostics;
+using System.Threading.Tasks;
 
 namespace RobotApp.Droid
 {
     [Activity(Label = "RobotApp", Icon = "@mipmap/icon", Theme = "@style/MainTheme", MainLauncher = true, ConfigurationChanges = ConfigChanges.ScreenSize | ConfigChanges.Orientation | ConfigChanges.UiMode | ConfigChanges.ScreenLayout | ConfigChanges.SmallestScreenSize )]
     public class MainActivity : global::Xamarin.Forms.Platform.Android.FormsAppCompatActivity
     {
-        public static MainActivity Instance;
-
+        private BluetoothDeviceReceiver _receiver;
         protected override void OnCreate(Bundle savedInstanceState)
         {
             TabLayoutResource = Resource.Layout.Tabbar;
@@ -28,35 +34,41 @@ namespace RobotApp.Droid
             global::Xamarin.Forms.Forms.Init(this, savedInstanceState);
             OxyPlot.Xamarin.Forms.Platform.Android.PlotViewRenderer.Init();
             LoadApplication(new App());
-            Instance = this;
+
+            const int locationPermissionsRequestCode = 1000;
+
+            var locationPermissions = new[]
+            {
+                Manifest.Permission.AccessCoarseLocation,
+                Manifest.Permission.AccessFineLocation
+            };
+
+            // check if the app has permission to access coarse location
+            var coarseLocationPermissionGranted =
+                ContextCompat.CheckSelfPermission(this, Manifest.Permission.AccessCoarseLocation);
+
+            // check if the app has permission to access fine location
+            var fineLocationPermissionGranted =
+                ContextCompat.CheckSelfPermission(this, Manifest.Permission.AccessFineLocation);
+
+            // if either is denied permission, request permission from the user
+            if (coarseLocationPermissionGranted == Permission.Denied ||
+                fineLocationPermissionGranted == Permission.Denied)
+            {
+                ActivityCompat.RequestPermissions(this, locationPermissions, locationPermissionsRequestCode);
+            }
+
+            // Register for broadcasts when a device is discovered
+            _receiver = new BluetoothDeviceReceiver();
+
+            RegisterReceiver(_receiver, new IntentFilter(BluetoothDevice.ActionFound));
         }
-        static int x;
+
         public override void OnRequestPermissionsResult(int requestCode, string[] permissions, [GeneratedEnum] Android.Content.PM.Permission[] grantResults)
         {
             Xamarin.Essentials.Platform.OnRequestPermissionsResult(requestCode, permissions, grantResults);
 
             base.OnRequestPermissionsResult(requestCode, permissions, grantResults);
-        }
-
-        private void CheckBluetoothEnabled()
-        {
-            BluetoothAdapter bluetoothAdapter = BluetoothAdapter.DefaultAdapter;
-            if (!BluetoothAdapter.DefaultAdapter.IsEnabled)
-            {
-                bluetoothAdapter.Enable();
-            }
-        }
-        private void Button_Click(object sender, EventArgs e)
-        {
-            Android.App.AlertDialog.Builder dialog = new AlertDialog.Builder(this);
-            AlertDialog alert = dialog.Create();
-            alert.SetTitle("Title");
-            alert.SetMessage("Simple Alert");
-            alert.SetButton("OK", (c, ev) =>
-            {
-                // Ok button click task  
-            });
-            alert.Show();
         }
     }
 }

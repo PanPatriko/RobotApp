@@ -11,9 +11,17 @@ namespace RobotApp
         public AppShell()
         {
             InitializeComponent();
+            
+            MessagingCenter.Subscribe<Application, string>(this, "Alert", (sender, arg) => CreateAlert(arg));
+
             Routing.RegisterRoute(nameof(MapPage), typeof(MapPage));
             Routing.RegisterRoute(nameof(AutoPage), typeof(AutoPage));
 
+        }
+
+        private async void CreateAlert(string arg)
+        {
+            await DisplayAlert("", arg, "OK");
         }
 
         private async void ToolbarItem_Clicked(object sender, EventArgs e)
