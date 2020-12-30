@@ -4,10 +4,27 @@
              x:Class="RobotApp.Views.ManulaPage">
     <ContentPage.Content>
         <StackLayout>
-            <Label Text="Status: Połączono z HC-05"/>
-            <Label Text="Przesuń przełącznik aby sterować robotem" HorizontalOptions="Center"/>
-            <Switch IsToggled="False" HorizontalOptions="Center"></Switch>
-            <Image Source="joy.png"/>
+            <Label x:Name="stateLabel" Text="Status:"/>
+            <Label Text="Włącz/Wyłącz tryb ręczny" HorizontalOptions="Center"/>
+            <Switch x:Name="ManualSwitch" IsToggled="False" HorizontalOptions="Center" Toggled="ManualSwitch_Toggled"></Switch>
+            <Grid HorizontalOptions="CenterAndExpand" VerticalOptions="CenterAndExpand">
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="1*"/>
+                    <RowDefinition Height="1*"/>
+                    <RowDefinition Height="1*"/>
+                </Grid.RowDefinitions>
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="1*"/>
+                    <ColumnDefinition Width="1*"/>
+                    <ColumnDefinition Width="1*"/>
+                </Grid.ColumnDefinitions>
+                <Button x:Name="ForwardButton" Grid.Column="1"></Button>
+                <Button x:Name="RightButton" Grid.Row="1" Grid.Column="2"></Button>
+                <Button x:Name="LeftButton" Grid.Row="1"></Button>
+                <Button x:Name="BackButton" Grid.Row="2" Grid.Column="1"></Button>
+            </Grid>
+            <Label x:Name="PWMLabel" Text="0"  HorizontalOptions="Center"></Label>
+            <Slider x:Name="PWMSlider"  Minimum="0" Maximum="255" ValueChanged="PWMSlider_ValueChanged"></Slider>
         </StackLayout>
     </ContentPage.Content>
 </ContentPage>

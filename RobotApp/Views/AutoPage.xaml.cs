@@ -24,15 +24,36 @@ namespace RobotApp.Views
             InitializeComponent();
             oxyPlotViewModel = new OxyPlotViewModel();
             BindingContext = oxyPlotViewModel;
+
+            MessagingCenter.Subscribe<Application, string>(this, "State", (sender, arg) =>
+            {
+                stateLabel.Text = "Status: " + arg;
+            });
+
+            MessagingCenter.Subscribe<Application, string>(this, "Hi", (sender, arg) =>
+            {
+                if(AutoSwitch.IsToggled)
+                {
+                    try
+                    {
+                        arg = arg.Replace('\r', '\0');
+                        arg = arg.Replace('\n', '\0');
+                        arg = arg.Replace("\0", string.Empty);
+                        string[] coordinates = arg.Split(':');
+                        oxyPlotViewModel.Model.Series.Clear();
+                        //  ScatterSeries pointsSeries = new ScatterSeries();
+                        pointsSeries.Points.Add(new ScatterPoint(int.Parse(coordinates[0]), int.Parse(coordinates[1])));
+                        oxyPlotViewModel.Model.Series.Add(pointsSeries);
+                        oxyPlotViewModel.Model.InvalidatePlot(true);
+                    }
+                    catch (Exception e)
+                    {
+                        Xamarin.Forms.MessagingCenter.Send(Xamarin.Forms.Application.Current, "Alert", e.Message);
+                    }
+                }
+            });
         }
-        private void Button_Clicked(object sender, EventArgs e)
-        {
-            oxyPlotViewModel.Model.Series.Clear();
-            //  ScatterSeries pointsSeries = new ScatterSeries();
-            pointsSeries.Points.Add(new ScatterPoint(random.Next(-10, 10), random.Next(-10, 10)));
-            oxyPlotViewModel.Model.Series.Add(pointsSeries);
-            oxyPlotViewModel.Model.InvalidatePlot(true);
-        }
+
         private void Button_Clicked2(object sender, EventArgs e)
         {
             oxyPlotViewModel.Model.Series.Clear();
@@ -42,6 +63,22 @@ namespace RobotApp.Views
             }
             oxyPlotViewModel.Model.Series.Add(line);
             oxyPlotViewModel.Model.InvalidatePlot(true);
+        }
+
+        private void AutoSwitch_Toggled(object sender, ToggledEventArgs e)
+        {
+            if (DependencyService.Get<IBluetooth>().IsConnected())
+            {
+                if (AutoSwitch.IsToggled)
+                {
+                    DependencyService.Get<IBluetooth>().Write("A");
+
+                }
+                else
+                {
+                    DependencyService.Get<IBluetooth>().Write("Stop");
+                }
+            }
         }
     }
 }

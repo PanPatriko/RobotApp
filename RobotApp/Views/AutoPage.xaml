@@ -10,12 +10,14 @@
                 <RowDefinition Height="auto"/>
                 <RowDefinition Height="*"/>
             </Grid.RowDefinitions>
-            <Label Text="Status: Połączono z HC-05"/>
+            <StackLayout>
+                <Label x:Name="stateLabel" Text="Status:"/>
+                <Label Text="Włącz/Wyłącz tryb automatyczny" HorizontalOptions="Center"/>
+            </StackLayout>
             <StackLayout Grid.Row="1" Orientation="Horizontal" HorizontalOptions="FillAndExpand">
-                <Button Text="Zapisz mape" IsEnabled="True" Clicked="Button_Clicked"/>
-                <Button Text="TestButton" IsEnabled="True" Clicked="Button_Clicked2"/>
-                <Label>Przesuń przełącznik aby zatrzymać pracę robota</Label>
-                <Switch IsToggled="True"></Switch>
+                <Button Text="Zapisz mape" />
+                <Button Text="TestButton" Clicked="Button_Clicked2"/>
+                <Switch x:Name="AutoSwitch" IsToggled="False" HorizontalOptions="Center" Toggled="AutoSwitch_Toggled"></Switch>
             </StackLayout>
             <oxy:PlotView Grid.Row="2" Model="{Binding Model}" VerticalOptions="Center" HorizontalOptions="Center" />
         </Grid>
