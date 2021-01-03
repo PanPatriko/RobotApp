@@ -9,7 +9,9 @@ namespace RobotApp
     public interface IBluetooth
     {
         bool IsBluetoothEnabled();
+
         bool IsGpsEnable();
+
         void GpsEnable();
 
         bool IsConnected();

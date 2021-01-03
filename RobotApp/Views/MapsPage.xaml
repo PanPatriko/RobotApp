@@ -5,15 +5,7 @@
     <ContentPage.Content>
         <StackLayout>
             <Label>Kliknij aby zobaczyć szczegółowe informacje</Label>
-            <ListView x:Name="Maps" ItemTapped="ListView_ItemTapped">
-                <ListView.ItemsSource>
-                    <x:Array Type="{x:Type x:String}">
-                        <x:String>Mapa 1</x:String>
-                        <x:String>Mapa 2</x:String>
-                        <x:String>Mapa 3</x:String>
-                        <x:String>Mapa 4</x:String>
-                    </x:Array>
-                </ListView.ItemsSource>
+            <ListView x:Name="MapsListView" ItemTapped="ListView_ItemTapped">
             </ListView>
         </StackLayout>
     </ContentPage.Content>

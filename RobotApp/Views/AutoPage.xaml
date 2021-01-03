@@ -15,7 +15,7 @@
                 <Label Text="Włącz/Wyłącz tryb automatyczny" HorizontalOptions="Center"/>
             </StackLayout>
             <StackLayout Grid.Row="1" Orientation="Horizontal" HorizontalOptions="FillAndExpand">
-                <Button Text="Zapisz mape" />
+                <Button Text="Zapisz mape" Clicked="Button_Clicked" />
                 <Button Text="TestButton" Clicked="Button_Clicked2"/>
                 <Switch x:Name="AutoSwitch" IsToggled="False" HorizontalOptions="Center" Toggled="AutoSwitch_Toggled"></Switch>
             </StackLayout>

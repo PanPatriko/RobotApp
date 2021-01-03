@@ -1,4 +1,5 @@
-﻿using System;
+﻿using RobotApp.Models;
+using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Linq;
@@ -22,7 +23,14 @@ namespace RobotApp.Views
         private async void ListView_ItemTapped(object sender, ItemTappedEventArgs e)
         {
             // await Shell.Current.GoToAsync("MapPage");
-            await Navigation.PushAsync(new MapPage(Maps.SelectedItem.ToString()));
+            await Navigation.PushAsync(new MapPage(MapsListView.SelectedItem as MapItem));
+        }
+
+        protected override async void OnAppearing()
+        {
+            base.OnAppearing();
+
+            MapsListView.ItemsSource = await App.Database.GetMapsAsync();
         }
     }
 }

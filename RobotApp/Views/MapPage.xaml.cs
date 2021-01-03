@@ -1,4 +1,6 @@
-﻿using RobotApp.ViewModels;
+﻿using OxyPlot.Series;
+using RobotApp.Models;
+using RobotApp.ViewModels;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -14,13 +16,31 @@ namespace RobotApp.Views
     public partial class MapPage : ContentPage
     {
         OxyPlotViewModel oxyPlotViewModel;
-        
-        public MapPage(string s)
+        MapItem map;
+        public MapPage(MapItem map)
         {
             InitializeComponent();
+            this.map = map;
             oxyPlotViewModel = new OxyPlotViewModel();
+            ScatterSeries pointsSeries = new ScatterSeries();
             BindingContext = oxyPlotViewModel;
-            MapName.Text = s;
+            Title = map.Name;
+            if(map.Points != null)
+            {
+                pointsSeries.Points.AddRange(map.Points);
+                oxyPlotViewModel.Model.Series.Add(pointsSeries);
+                oxyPlotViewModel.Model.InvalidatePlot(true);
+            }
+        }
+
+        private async void Button_Clicked(object sender, EventArgs e)
+        {
+            bool result = await DisplayAlert("Usuń", "Czy na pewno chcesz usunąć tą mapę?", "Tak", "Nie");
+            if(result)
+            {
+                await App.Database.DeleteMapAsync(map);
+                await Navigation.PopAsync();
+            }
         }
     }
 }

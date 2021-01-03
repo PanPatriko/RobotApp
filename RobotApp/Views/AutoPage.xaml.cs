@@ -5,6 +5,7 @@ using System.Text;
 using System.Threading.Tasks;
 using OxyPlot;
 using OxyPlot.Series;
+using RobotApp.Models;
 using RobotApp.ViewModels;
 using Xamarin.Forms;
 using Xamarin.Forms.Xaml;
@@ -57,6 +58,15 @@ namespace RobotApp.Views
         private void Button_Clicked2(object sender, EventArgs e)
         {
             oxyPlotViewModel.Model.Series.Clear();
+            //  ScatterSeries pointsSeries = new ScatterSeries();
+            pointsSeries.Points.Add(new ScatterPoint(random.Next(-50, 51), random.Next(-50, 51)));
+            oxyPlotViewModel.Model.Series.Add(pointsSeries);
+            oxyPlotViewModel.Model.InvalidatePlot(true);
+        }
+
+        private void PointsToLine()
+        {
+            oxyPlotViewModel.Model.Series.Clear();
             foreach (ScatterPoint scatter in pointsSeries.Points)
             {
                 line.Points.Add(new DataPoint(scatter.X, scatter.Y));
@@ -78,6 +88,19 @@ namespace RobotApp.Views
                 {
                     DependencyService.Get<IBluetooth>().Write("Stop");
                 }
+            }
+        }
+
+        private async void Button_Clicked(object sender, EventArgs e)
+        {
+            string result = await DisplayPromptAsync("Zapisz mape", "Jak chcesz nazwać mape?","OK","Anuluj");
+            if(result != null)
+            {
+                MapItem map = new MapItem();
+                map.Name = result;
+                map.Points = pointsSeries.Points;
+                await App.Database.SaveMapAsync(map);
+                await DisplayAlert("", "Zapisano mape", "ok");
             }
         }
     }
