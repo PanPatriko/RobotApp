@@ -58,9 +58,17 @@ namespace RobotApp.Views
 
         private async void Scan_Clicked(object sender, EventArgs e)
         {
-            if(!DependencyService.Get<IBluetooth>().IsBluetoothEnabled())
+            if (!DependencyService.Get<IBluetooth>().IsGpsEnable())
             {
-                bool result = await DisplayAlert("Enable Bluetooth", "Enable Bluetooth?", "OK", "Cancel");
+                bool result = await DisplayAlert("GPS", "Aby wyszukać nowe urządzenia należy włączyć lokalizacje", "Tak", "Anuluj");
+                if (result)
+                {
+                    DependencyService.Get<IBluetooth>().GpsEnable();
+                }
+            }
+            if (!DependencyService.Get<IBluetooth>().IsBluetoothEnabled())
+            {
+                bool result = await DisplayAlert("Bluetooth", "Włączyć bluetooth?", "Tak", "Anuluj");
                 if(result)
                 {
                     DependencyService.Get<IBluetooth>().BluetoothEnable();

@@ -13,6 +13,7 @@ using RobotApp.Models;
 using Java.Util;
 using System.Threading.Tasks;
 using System.Threading;
+using Android.Locations;
 
 [assembly: Xamarin.Forms.Dependency(typeof(Bluetooth_Android))]
 
@@ -37,6 +38,26 @@ namespace RobotApp.Droid
             {
                 bluetoothAdapter.CancelDiscovery();
             }
+        }
+        public bool IsGpsEnable()
+        {
+            LocationManager locationManager = (LocationManager)Android.App.Application.Context.GetSystemService(Context.LocationService);
+            return locationManager.IsProviderEnabled(LocationManager.GpsProvider);
+        }
+        public void GpsEnable()
+        {
+            Intent intent = new Intent(Android.Provider.Settings.ActionLocat‌​ionSourceSettings);
+            intent.SetFlags(ActivityFlags.ClearTop | ActivityFlags.NewTask);
+
+            try
+            {
+                Android.App.Application.Context.StartActivity(intent);
+            }
+            catch (ActivityNotFoundException)
+            {
+                Android.Widget.Toast.MakeText(Android.App.Application.Context, "Error: Gps Activity", Android.Widget.ToastLength.Short).Show();
+            }
+
         }
 
         public bool IsBluetoothEnabled()
