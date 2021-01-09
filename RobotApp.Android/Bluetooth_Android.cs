@@ -19,11 +19,13 @@ using Android.Locations;
 
 namespace RobotApp.Droid
 {
+
     class Bluetooth_Android : IBluetooth
     {
         BluetoothSocket socket;
         BluetoothAdapter bluetoothAdapter = BluetoothAdapter.DefaultAdapter;
-
+        BluetoothDevice lastDevice;
+        bool userDisconnect = false;
         public void BluetoothEnable()
         {
             if (bluetoothAdapter != null)
@@ -83,14 +85,14 @@ namespace RobotApp.Droid
             {
                 try
                 {
-                    Write("Disconnected with Android");
-                    Xamarin.Forms.MessagingCenter.Send(Xamarin.Forms.Application.Current, "State", "rozłączono");
-                  //  Xamarin.Forms.MessagingCenter.Send(Xamarin.Forms.Application.Current, "Alert", "Rozłączono z " + socket.RemoteDevice.Name);
+                    //Write("Disconnected with Android");
+                    userDisconnect = true;
                     socket.Close();
+                    Xamarin.Forms.MessagingCenter.Send(Xamarin.Forms.Application.Current, "State", "rozłączono");
                 }
                 catch (Java.IO.IOException)
                 {
-                    Xamarin.Forms.MessagingCenter.Send(Xamarin.Forms.Application.Current, "Alert", "Cannot close socket");
+                    Xamarin.Forms.MessagingCenter.Send(Xamarin.Forms.Application.Current, "Alert", "Błąd podczas zamykania gniazda");
                 }
             }
         }
@@ -118,7 +120,24 @@ namespace RobotApp.Droid
                 bluetoothAdapter.StartDiscovery();
             }
         }
-
+        public async void ConnectAgain()
+        {
+            try
+            {
+                socket = lastDevice.CreateRfcommSocketToServiceRecord(UUID.FromString("00001101-0000-1000-8000-00805f9b34fb"));
+                await socket.ConnectAsync();
+                Xamarin.Forms.MessagingCenter.Send(Xamarin.Forms.Application.Current, "State", "połączono z " + socket.RemoteDevice.Name + " " + socket.RemoteDevice.Address);
+                Xamarin.Forms.MessagingCenter.Send(Xamarin.Forms.Application.Current, "Alert", "Połączono z " + socket.RemoteDevice.Name);
+                //Write("Connected with Android");
+                userDisconnect = false;
+            }
+            catch (Java.IO.IOException)
+            {
+                socket.Close();
+                Xamarin.Forms.MessagingCenter.Send(Xamarin.Forms.Application.Current, "State", "rozłączono");
+                Xamarin.Forms.MessagingCenter.Send(Xamarin.Forms.Application.Current, "ConnectionLost", "Nie można połączyć się z urządzeniem");
+            }
+        }
         public async void Connect(DeviceInfo deviceInfo)
         {
             BluetoothDevice device = (from bd in BluetoothDevicesList.devices
@@ -135,20 +154,22 @@ namespace RobotApp.Droid
                 {
                     socket.Close();
                     Xamarin.Forms.MessagingCenter.Send(Xamarin.Forms.Application.Current, "State", "rozłączono");
-                    Xamarin.Forms.MessagingCenter.Send(Xamarin.Forms.Application.Current, "Alert", "Cannot create socket");
+                    Xamarin.Forms.MessagingCenter.Send(Xamarin.Forms.Application.Current, "Alert", "Nie można utworzyć gniazda");
                 }
                 try
                 {
                     await socket.ConnectAsync();
                     Xamarin.Forms.MessagingCenter.Send(Xamarin.Forms.Application.Current, "State", "połączono z " + device.Name + " " + device.Address);
                     Xamarin.Forms.MessagingCenter.Send(Xamarin.Forms.Application.Current, "Alert", "Połączono z " + device.Name);
-                    Write("Connected with Android");
+                    //Write("Connected with Android");
+                    userDisconnect = false;
+                    lastDevice = device;
                 }
                 catch (Java.IO.IOException)
                 {
                     socket.Close();
                     Xamarin.Forms.MessagingCenter.Send(Xamarin.Forms.Application.Current, "State", "rozłączono");
-                    Xamarin.Forms.MessagingCenter.Send(Xamarin.Forms.Application.Current, "Alert", "Cannot connect to device");
+                    Xamarin.Forms.MessagingCenter.Send(Xamarin.Forms.Application.Current, "Alert", "Nie można połączyć się z urządzeniem");
                 }
             }
         }
@@ -170,15 +191,21 @@ namespace RobotApp.Droid
                     s += Encoding.UTF8.GetString(buffer);
                     if (s.Contains("\r"))
                     {
-                        Xamarin.Forms.MessagingCenter.Send(Xamarin.Forms.Application.Current, "Hi", s);
+                        Xamarin.Forms.MessagingCenter.Send(Xamarin.Forms.Application.Current, "Read", s);
                         s = "";
                     }
                 }
                 catch (Java.IO.IOException)
                 {
-                    Xamarin.Forms.MessagingCenter.Send(Xamarin.Forms.Application.Current, "Alert", "Input stream was disconnected");
-                    Xamarin.Forms.MessagingCenter.Send(Xamarin.Forms.Application.Current, "State", "rozłączono");
-                    socket.Close();
+                    if (socket.IsConnected)
+                    {
+                        Xamarin.Forms.MessagingCenter.Send(Xamarin.Forms.Application.Current, "State", "rozłączono");
+                        socket.Close();
+                        if (!userDisconnect)
+                        {
+                            Xamarin.Forms.MessagingCenter.Send(Xamarin.Forms.Application.Current, "ConnectionLost", "Utracono połączenie");
+                        }
+                    }
                     break;
                 }
             }
@@ -197,18 +224,10 @@ namespace RobotApp.Droid
                     }
                     catch (Java.IO.IOException)
                     {
-                        Xamarin.Forms.MessagingCenter.Send(Xamarin.Forms.Application.Current, "Alert", "Error occurred when sending data");
+                        Xamarin.Forms.MessagingCenter.Send(Xamarin.Forms.Application.Current, "Alert", "Wystąpił błąd podczas wysyłania danych");
                         CloseConnection();
                     }
                 }
-                else
-                {
-                    throw new Exception("Socket is not connected");
-                }
-            }
-            else
-            {
-                throw new NullReferenceException("Socket is null");
             }
         }
 

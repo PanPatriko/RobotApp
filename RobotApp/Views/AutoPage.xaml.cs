@@ -18,8 +18,8 @@ namespace RobotApp.Views
         OxyPlotViewModel oxyPlotViewModel;
         Random random = new Random();
         ScatterSeries pointsSeries = new ScatterSeries();
-        LineSeries line = new LineSeries();
-
+        LineSeries lineSeries = new LineSeries();
+        bool isManual = false;
         public AutoPage()
         {
             InitializeComponent();
@@ -29,9 +29,25 @@ namespace RobotApp.Views
             MessagingCenter.Subscribe<Application, string>(this, "State", (sender, arg) =>
             {
                 stateLabel.Text = "Status: " + arg;
+                if (AutoSwitch.IsToggled && DependencyService.Get<IBluetooth>().IsConnected())
+                {
+                    DependencyService.Get<IBluetooth>().Write("A");
+                }
             });
-
-            MessagingCenter.Subscribe<Application, string>(this, "Hi", (sender, arg) =>
+            MessagingCenter.Subscribe<Application, string>(this, "ManualON", (sender, arg) =>
+            {
+                isManual = true;
+            });
+            MessagingCenter.Subscribe<Application, string>(this, "ManualOFF", (sender, arg) =>
+            {
+                isManual = false;
+            });
+            MessagingCenter.Subscribe<Application, string>(this, "AutoDisable", (sender, arg) =>
+            {
+                AutoSwitch.IsToggled = false;
+                ClearOxyPlot();
+            });
+            MessagingCenter.Subscribe<Application, string>(this, "Read", (sender, arg) =>
             {
                 if(AutoSwitch.IsToggled)
                 {
@@ -43,13 +59,13 @@ namespace RobotApp.Views
                         string[] coordinates = arg.Split(':');
                         oxyPlotViewModel.Model.Series.Clear();
                         //  ScatterSeries pointsSeries = new ScatterSeries();
-                        pointsSeries.Points.Add(new ScatterPoint(int.Parse(coordinates[0]), int.Parse(coordinates[1])));
+                        pointsSeries.Points.Add(new ScatterPoint(int.Parse(coordinates[0]), int.Parse(coordinates[1]),2.5));
                         oxyPlotViewModel.Model.Series.Add(pointsSeries);
                         oxyPlotViewModel.Model.InvalidatePlot(true);
                     }
                     catch (Exception e)
                     {
-                        Xamarin.Forms.MessagingCenter.Send(Xamarin.Forms.Application.Current, "Alert", e.Message);
+                        //Xamarin.Forms.MessagingCenter.Send(Xamarin.Forms.Application.Current, "Alert", e.Message);
                     }
                 }
             });
@@ -59,8 +75,16 @@ namespace RobotApp.Views
         {
             oxyPlotViewModel.Model.Series.Clear();
             //  ScatterSeries pointsSeries = new ScatterSeries();
-            pointsSeries.Points.Add(new ScatterPoint(random.Next(-50, 51), random.Next(-50, 51)));
+            pointsSeries.Points.Add(new ScatterPoint(random.Next(-50, 51), random.Next(-50, 51),2.5));
             oxyPlotViewModel.Model.Series.Add(pointsSeries);
+            oxyPlotViewModel.Model.InvalidatePlot(true);
+        }
+
+        private void ClearOxyPlot()
+        {
+            oxyPlotViewModel.Model.Series.Clear();
+            pointsSeries = new ScatterSeries();
+            lineSeries = new LineSeries();
             oxyPlotViewModel.Model.InvalidatePlot(true);
         }
 
@@ -69,28 +93,51 @@ namespace RobotApp.Views
             oxyPlotViewModel.Model.Series.Clear();
             foreach (ScatterPoint scatter in pointsSeries.Points)
             {
-                line.Points.Add(new DataPoint(scatter.X, scatter.Y));
+                lineSeries.Points.Add(new DataPoint(scatter.X, scatter.Y));
             }
-            oxyPlotViewModel.Model.Series.Add(line);
+            oxyPlotViewModel.Model.Series.Add(lineSeries);
             oxyPlotViewModel.Model.InvalidatePlot(true);
         }
 
-        private void AutoSwitch_Toggled(object sender, ToggledEventArgs e)
+        private async void AutoSwitch_Toggled(object sender, ToggledEventArgs e)
         {
             if (DependencyService.Get<IBluetooth>().IsConnected())
             {
-                if (AutoSwitch.IsToggled)
+                if (isManual && AutoSwitch.IsToggled)
                 {
-                    DependencyService.Get<IBluetooth>().Write("A");
-
+                    bool result = await DisplayAlert("Uwaga", "Uruchomiony jest tryb ręczny\n\rCzy chcesz go przerwać?", "Tak", "Nie");
+                    if (result)
+                    {
+                        Xamarin.Forms.MessagingCenter.Send(Xamarin.Forms.Application.Current, "AutoON", "");
+                        Xamarin.Forms.MessagingCenter.Send(Xamarin.Forms.Application.Current, "ManualDisable", "");
+                        isManual = false;
+                        DependencyService.Get<IBluetooth>().Write("A");
+                    }
+                    else
+                    {
+                        AutoSwitch.IsToggled = false;
+                        Xamarin.Forms.MessagingCenter.Send(Xamarin.Forms.Application.Current, "AutoOFF", "");
+                    }
                 }
-                else
+                else if(AutoSwitch.IsToggled && !isManual)
                 {
-                    DependencyService.Get<IBluetooth>().Write("Stop");
+                    Xamarin.Forms.MessagingCenter.Send(Xamarin.Forms.Application.Current, "AutoON", "");
+                    DependencyService.Get<IBluetooth>().Write("A");
+                }
+                else if(!isManual)
+                {
+                    Xamarin.Forms.MessagingCenter.Send(Xamarin.Forms.Application.Current, "AutoOFF", "");
+                    DependencyService.Get<IBluetooth>().Write("S");
+                    ClearOxyPlot();
                 }
             }
+            else
+            {
+                AutoSwitch.IsToggled = false;
+                ClearOxyPlot();
+            }
         }
-
+        
         private async void Button_Clicked(object sender, EventArgs e)
         {
             string result = await DisplayPromptAsync("Zapisz mape", "Jak chcesz nazwać mape?","OK","Anuluj");
@@ -101,6 +148,7 @@ namespace RobotApp.Views
                 map.Points = pointsSeries.Points;
                 await App.Database.SaveMapAsync(map);
                 await DisplayAlert("", "Zapisano mape", "ok");
+                ClearOxyPlot();
             }
         }
     }

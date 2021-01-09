@@ -30,6 +30,8 @@ namespace RobotApp
 
         void Connect(DeviceInfo deviceInfo);
 
+        void ConnectAgain();
+
         void CloseConnection();
 
         void GetBondedDevices();

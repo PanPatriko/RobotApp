@@ -1,7 +1,8 @@
 ﻿<?xml version="1.0" encoding="utf-8" ?>
 <ContentPage xmlns="http://xamarin.com/schemas/2014/forms"
              xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
-             x:Class="RobotApp.Views.BluetoothPage">
+             x:Class="RobotApp.Views.BluetoothPage"
+             Title="Połącz">
     <ContentPage.Content>
         <StackLayout>
             <Label x:Name="stateLabel" Text="Status:"></Label>
@@ -25,9 +26,9 @@
                 <ListView x:Name="DevicesListView" IsGroupingEnabled="true" GroupDisplayBinding="{Binding DeviceType}" ItemsSource="{Binding groupedDevices}" 
                            Grid.Row="1" Grid.ColumnSpan="3" Header="Dostępne urządzenia"/>
 
-                <Button Text="send" Clicked="Button_Clicked_1" Grid.Row="2"/>
+                <!--<Button Text="send" Clicked="Button_Clicked_1" Grid.Row="2"/>
                 <Editor x:Name="SendE" Grid.Row="3" ></Editor>
-                <Editor x:Name="readE" Grid.Row="2" Grid.RowSpan="2" Grid.Column="1" Grid.ColumnSpan="2"></Editor>
+                <Editor x:Name="readE" Grid.Row="2" Grid.RowSpan="2" Grid.Column="1" Grid.ColumnSpan="2"></Editor>-->
                 
             </Grid>
         </StackLayout>

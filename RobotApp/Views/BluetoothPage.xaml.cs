@@ -25,7 +25,7 @@ namespace RobotApp.Views
 
             MessagingCenter.Subscribe<Application, string>(this, "Hi", (sender, arg) =>
              {
-                 readE.Text += arg;
+               //  readE.Text += arg;
              });
 
             MessagingCenter.Subscribe<Application, string>(this, "State", (sender, arg) =>
@@ -60,7 +60,7 @@ namespace RobotApp.Views
         {
             if (!DependencyService.Get<IBluetooth>().IsGpsEnable())
             {
-                bool result = await DisplayAlert("GPS", "Aby wyszukać nowe urządzenia należy włączyć lokalizacje", "Tak", "Anuluj");
+                bool result = await DisplayAlert("GPS", "Aby wyszukać nowe urządzenia należy włączyć lokalizacje", "OK", "Anuluj");
                 if (result)
                 {
                     DependencyService.Get<IBluetooth>().GpsEnable();
@@ -68,7 +68,7 @@ namespace RobotApp.Views
             }
             if (!DependencyService.Get<IBluetooth>().IsBluetoothEnabled())
             {
-                bool result = await DisplayAlert("Bluetooth", "Włączyć bluetooth?", "Tak", "Anuluj");
+                bool result = await DisplayAlert("Bluetooth", "Włączyć bluetooth?", "OK", "Anuluj");
                 if(result)
                 {
                     DependencyService.Get<IBluetooth>().BluetoothEnable();
@@ -81,18 +81,18 @@ namespace RobotApp.Views
             }
         }
 
-        private async void Button_Clicked_1(object sender, EventArgs e)
-        {
-            try
-            {
-                DependencyService.Get<IBluetooth>().Write(SendE.Text);
-                readE.Text += SendE.Text + "\n\r";
-            }
-            catch (Exception ex)
-            {
-                await DisplayAlert("Error", ex.Message, "OK");
-            }
-        }
+        //private async void Button_Clicked_1(object sender, EventArgs e)
+        //{
+        //    try
+        //    {
+        //        DependencyService.Get<IBluetooth>().Write(SendE.Text);
+        //        readE.Text += SendE.Text + "\n\r";
+        //    }
+        //    catch (Exception ex)
+        //    {
+        //        await DisplayAlert("Error", ex.Message, "OK");
+        //    }
+        //}
 
         private async void CloseConnection_Clicked(object sender, EventArgs e)
         {

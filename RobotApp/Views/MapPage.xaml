@@ -7,10 +7,23 @@
         <Grid>
             <Grid.RowDefinitions>
                 <RowDefinition Height="auto"/>
+                <RowDefinition Height="auto"/>
                 <RowDefinition Height="*"/>
             </Grid.RowDefinitions>
-            <Button Text="Usuń" Clicked="Button_Clicked"></Button>
-            <oxy:PlotView Model="{Binding Model}" VerticalOptions="Center" HorizontalOptions="Center" Grid.Row="1"/>
+            <Grid>
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="1*"/>
+                    <ColumnDefinition Width="1*"/>
+                </Grid.ColumnDefinitions>
+                <Button Text="Usuń" Clicked="Button_Clicked"></Button>
+                <Button Text="Zmień nazwę" Clicked="Button_Clicked2" Grid.Column="1"></Button>
+
+            </Grid>
+            <StackLayout Orientation="Horizontal" HorizontalOptions="Center" Grid.Row="1">
+                <Label>Punkty/Linia</Label>
+                <Switch x:Name="MapSwitch" Toggled="Switch_Toggled"></Switch>
+            </StackLayout>
+            <oxy:PlotView Model="{Binding Model}" VerticalOptions="Center" HorizontalOptions="Center" Grid.Row="2"/>
         </Grid>
     </ContentPage.Content>
 </ContentPage>

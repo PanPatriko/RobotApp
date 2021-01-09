@@ -2,7 +2,8 @@
 <ContentPage xmlns="http://xamarin.com/schemas/2014/forms"
              xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml" 
              xmlns:oxy="clr-namespace:OxyPlot.Xamarin.Forms;assembly=OxyPlot.Xamarin.Forms"
-             x:Class="RobotApp.Views.AutoPage">
+             x:Class="RobotApp.Views.AutoPage"
+             Title="Sterowanie automatyczne">
     <ContentPage.Content>
         <Grid>
             <Grid.RowDefinitions>
@@ -12,12 +13,12 @@
             </Grid.RowDefinitions>
             <StackLayout>
                 <Label x:Name="stateLabel" Text="Status:"/>
-                <Label Text="Włącz/Wyłącz tryb automatyczny" HorizontalOptions="Center"/>
             </StackLayout>
             <StackLayout Grid.Row="1" Orientation="Horizontal" HorizontalOptions="FillAndExpand">
-                <Button Text="Zapisz mape" Clicked="Button_Clicked" />
-                <Button Text="TestButton" Clicked="Button_Clicked2"/>
+                <Label Text="Włącz/Wyłącz tryb automatyczny" HorizontalOptions="Center" VerticalOptions="Center"/>
                 <Switch x:Name="AutoSwitch" IsToggled="False" HorizontalOptions="Center" Toggled="AutoSwitch_Toggled"></Switch>
+                <Button Text="Zapisz mape" Clicked="Button_Clicked" />
+                <Button Clicked="Button_Clicked2"/>
             </StackLayout>
             <oxy:PlotView Grid.Row="2" Model="{Binding Model}" VerticalOptions="Center" HorizontalOptions="Center" />
         </Grid>

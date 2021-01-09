@@ -92,9 +92,6 @@
             <local:BluetoothPage/>
         </ShellContent>
     </FlyoutItem>
-    <ShellContent Title="Ustawienia">
-        <local:SettingsPage/>
-    </ShellContent>
     <ShellContent Title="Zapisane mapy">
         <local:MapsPage/>
     </ShellContent>

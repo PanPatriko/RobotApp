@@ -7,6 +7,7 @@ using System.IO;
 
 namespace RobotApp
 {
+
     public partial class App : Application
     {
         static MapDatabase database;

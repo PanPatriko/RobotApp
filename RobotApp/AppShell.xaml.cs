@@ -13,6 +13,7 @@ namespace RobotApp
             InitializeComponent();
             
             MessagingCenter.Subscribe<Application, string>(this, "Alert", (sender, arg) => CreateAlert(arg));
+            MessagingCenter.Subscribe<Application, string>(this, "ConnectionLost", (sender, arg) => CreateAlert2(arg));
 
             Routing.RegisterRoute(nameof(MapPage), typeof(MapPage));
             Routing.RegisterRoute(nameof(AutoPage), typeof(AutoPage));
@@ -22,6 +23,14 @@ namespace RobotApp
         private async void CreateAlert(string arg)
         {
             await DisplayAlert("", arg, "OK");
+        }
+        private async void CreateAlert2(string arg)
+        {
+            bool result = await DisplayAlert("", arg + "\r\nCzy spróbować połączyć się ponownie?", "OK","Anuluj");
+            if(result)
+            {
+                DependencyService.Get<IBluetooth>().ConnectAgain();
+            }
         }
 
         private async void ToolbarItem_Clicked(object sender, EventArgs e)

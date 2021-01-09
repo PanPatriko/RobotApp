@@ -1,10 +1,11 @@
 ﻿<?xml version="1.0" encoding="utf-8" ?>
 <ContentPage xmlns="http://xamarin.com/schemas/2014/forms"
              xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
-             x:Class="RobotApp.Views.MapsPage">
+             x:Class="RobotApp.Views.MapsPage"
+             Title="Zapisane mapy">
     <ContentPage.Content>
         <StackLayout>
-            <Label>Kliknij aby zobaczyć szczegółowe informacje</Label>
+            <Label>Kliknij aby wyświetlić mapę</Label>
             <ListView x:Name="MapsListView" ItemTapped="ListView_ItemTapped">
             </ListView>
         </StackLayout>

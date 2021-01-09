@@ -19,48 +19,89 @@ namespace RobotApp.Views
             MessagingCenter.Subscribe<Application, string>(this, "State", (sender, arg) =>
             {
                 stateLabel.Text = "Status: " + arg;
-            });
-        }
-
-
-        private void ManualSwitch_Toggled(object sender, ToggledEventArgs e)
-        {
-            if (DependencyService.Get<IBluetooth>().IsConnected())
-            {
-                if (ManualSwitch.IsToggled)
+                if(ManualSwitch.IsToggled && DependencyService.Get<IBluetooth>().IsConnected())
                 {
                     DependencyService.Get<IBluetooth>().Write("M");
                     DependencyService.Get<IBluetooth>().Write(PWMLabel.Text);
-                    Task.Run(() =>
-                    {
-                        while (ManualSwitch.IsToggled)
-                        {
-                            //if(!DependencyService.Get<IBluetooth>().IsConnected())
-                            //{
-                            //     break;
-                            // }
-                            if (ForwardButton.IsPressed)
-                            {
-                                DependencyService.Get<IBluetooth>().Write("F");
-                            }
-                            if (BackButton.IsPressed)
-                            {
-                                DependencyService.Get<IBluetooth>().Write("B");
-                            }
-                            if (RightButton.IsPressed)
-                            {
-                                DependencyService.Get<IBluetooth>().Write("R");
-                            }
-                            if (LeftButton.IsPressed)
-                            {
-                                DependencyService.Get<IBluetooth>().Write("L");
-                            }
-                        }
-                    });
                 }
-                else
+            });
+            MessagingCenter.Subscribe<Application, string>(this, "AutoON", (sender, arg) =>
+            {
+                isAuto = true;
+            });
+            MessagingCenter.Subscribe<Application, string>(this, "AutoOFF", (sender, arg) =>
+            {
+                isAuto = false;
+            });
+            MessagingCenter.Subscribe<Application, string>(this, "ManualDisable", (sender, arg) =>
+            {
+                ManualSwitch.IsToggled = false;
+            });
+        }
+
+        bool isAuto = false;
+
+
+        private async void ManualSwitch_Toggled(object sender, ToggledEventArgs e)
+        {
+            if (DependencyService.Get<IBluetooth>().IsConnected())
+            {
+                if(isAuto && ManualSwitch.IsToggled)
                 {
-                    DependencyService.Get<IBluetooth>().Write("Stop");
+                    bool result = await DisplayAlert("Uwaga", "Uruchomiony jest tryb automatyczny\n\rCzy chcesz go przerwać?", "Tak", "Nie");
+                    if (result)
+                    {
+                        Xamarin.Forms.MessagingCenter.Send(Xamarin.Forms.Application.Current, "ManualON", "");
+                        Xamarin.Forms.MessagingCenter.Send(Xamarin.Forms.Application.Current, "AutoDisable", "");
+                        isAuto = false;
+                        DependencyService.Get<IBluetooth>().Write("M");
+                        DependencyService.Get<IBluetooth>().Write(PWMLabel.Text);
+                        _ = Task.Run(ManualControl);
+                    }
+                    else
+                    {
+                        Xamarin.Forms.MessagingCenter.Send(Xamarin.Forms.Application.Current, "ManualOFF", "");
+                        ManualSwitch.IsToggled = false;
+                    }
+                }
+                else if (ManualSwitch.IsToggled && !isAuto)
+                {
+                    Xamarin.Forms.MessagingCenter.Send(Xamarin.Forms.Application.Current, "ManualON", "");
+                    DependencyService.Get<IBluetooth>().Write("M");
+                    DependencyService.Get<IBluetooth>().Write(PWMLabel.Text);
+                    _ = Task.Run(ManualControl);
+                }
+                else if(!isAuto)
+                {
+                    Xamarin.Forms.MessagingCenter.Send(Xamarin.Forms.Application.Current, "ManualOFF", "");
+                    DependencyService.Get<IBluetooth>().Write("S");
+                }
+            }
+            else
+            {
+                ManualSwitch.IsToggled = false;
+            }
+        }
+
+        private void ManualControl()
+        {
+            while (ManualSwitch.IsToggled)
+            {
+                if (ForwardButton.IsPressed)
+                {
+                    DependencyService.Get<IBluetooth>().Write("F");
+                }
+                if (BackButton.IsPressed)
+                {
+                    DependencyService.Get<IBluetooth>().Write("B");
+                }
+                if (RightButton.IsPressed)
+                {
+                    DependencyService.Get<IBluetooth>().Write("R");
+                }
+                if (LeftButton.IsPressed)
+                {
+                    DependencyService.Get<IBluetooth>().Write("L");
                 }
             }
         }
