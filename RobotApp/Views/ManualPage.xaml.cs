@@ -22,7 +22,7 @@ namespace RobotApp.Views
                 if(ManualSwitch.IsToggled && DependencyService.Get<IBluetooth>().IsConnected())
                 {
                     DependencyService.Get<IBluetooth>().Write("M");
-                    DependencyService.Get<IBluetooth>().Write(PWMLabel.Text);
+                    DependencyService.Get<IBluetooth>().Write(" " + PWMLabel.Text + " ");
                 }
             });
             MessagingCenter.Subscribe<Application, string>(this, "AutoON", (sender, arg) =>
@@ -41,6 +41,25 @@ namespace RobotApp.Views
 
         bool isAuto = false;
 
+        protected override void OnSizeAllocated(double width, double height)
+        {
+            base.OnSizeAllocated(width, height);
+            if (width != WidthRequest || height != HeightRequest)
+            {
+                WidthRequest = width;
+                HeightRequest = height;
+                if (width > height)
+                {
+                    Stack1.Orientation = StackOrientation.Horizontal;
+                    Stack1.VerticalOptions = LayoutOptions.Start;
+                }
+                else
+                {
+                    Stack1.Orientation = StackOrientation.Vertical;
+                    Stack1.VerticalOptions = LayoutOptions.FillAndExpand;
+                }
+            }
+        }
 
         private async void ManualSwitch_Toggled(object sender, ToggledEventArgs e)
         {
@@ -56,7 +75,7 @@ namespace RobotApp.Views
                         isAuto = false;
                         DependencyService.Get<IBluetooth>().Write("M");
                         DependencyService.Get<IBluetooth>().Write(PWMLabel.Text);
-                        _ = Task.Run(ManualControl);
+                       // _ = Task.Run(ManualControl);
                     }
                     else
                     {
@@ -69,7 +88,7 @@ namespace RobotApp.Views
                     Xamarin.Forms.MessagingCenter.Send(Xamarin.Forms.Application.Current, "ManualON", "");
                     DependencyService.Get<IBluetooth>().Write("M");
                     DependencyService.Get<IBluetooth>().Write(PWMLabel.Text);
-                    _ = Task.Run(ManualControl);
+                   // _ = Task.Run(ManualControl);
                 }
                 else if(!isAuto)
                 {
@@ -109,9 +128,57 @@ namespace RobotApp.Views
         private void PWMSlider_ValueChanged(object sender, ValueChangedEventArgs e)
         {
             PWMLabel.Text = Math.Round(PWMSlider.Value).ToString();
+        //    if (DependencyService.Get<IBluetooth>().IsConnected() && ManualSwitch.IsToggled)
+           // {
+           //     DependencyService.Get<IBluetooth>().Write(PWMLabel.Text);
+            //}
+        }
+
+        private void ForwardButton_Pressed(object sender, EventArgs e)
+        {
+            if(DependencyService.Get<IBluetooth>().IsConnected() && ManualSwitch.IsToggled)
+            {
+                DependencyService.Get<IBluetooth>().Write("F");
+            }
+        }
+        private void BackButton_Pressed(object sender, EventArgs e)
+        {
             if (DependencyService.Get<IBluetooth>().IsConnected() && ManualSwitch.IsToggled)
             {
-                DependencyService.Get<IBluetooth>().Write(PWMLabel.Text);
+                DependencyService.Get<IBluetooth>().Write("B");
+            }
+        }
+
+        private void LeftdButton_Pressed(object sender, EventArgs e)
+        {
+            if (DependencyService.Get<IBluetooth>().IsConnected() && ManualSwitch.IsToggled)
+            {
+                DependencyService.Get<IBluetooth>().Write("L");
+            }
+        }
+
+        private void RightButton_Pressed(object sender, EventArgs e)
+        {
+            if (DependencyService.Get<IBluetooth>().IsConnected() && ManualSwitch.IsToggled)
+            {
+                DependencyService.Get<IBluetooth>().Write("R");
+            }
+        }
+
+        private void Button_Released(object sender, EventArgs e)
+        {
+            if (DependencyService.Get<IBluetooth>().IsConnected() && ManualSwitch.IsToggled)
+            {
+                DependencyService.Get<IBluetooth>().Write("P");
+            }
+        }
+
+
+        private void PWMSlider_DragCompleted(object sender, EventArgs e)
+        {
+            if (DependencyService.Get<IBluetooth>().IsConnected() && ManualSwitch.IsToggled)
+            {
+                DependencyService.Get<IBluetooth>().Write(" " + PWMLabel.Text + " ");
             }
         }
     }

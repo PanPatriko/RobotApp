@@ -9,29 +9,31 @@
     <ContentPage.Content>
         <StackLayout>
             <Label x:Name="stateLabel" Text="Status:"/>
-            <Label Text="Włącz/Wyłącz tryb ręczny" HorizontalOptions="Center"/>
-            <Switch x:Name="ManualSwitch" IsToggled="False" HorizontalOptions="Center" Toggled="ManualSwitch_Toggled"></Switch>
-            <Grid HorizontalOptions="CenterAndExpand" VerticalOptions="CenterAndExpand">
-                <Grid.RowDefinitions>
-                    <RowDefinition Height="1*"/>
-                    <RowDefinition Height="1*"/>
-                    <RowDefinition Height="1*"/>
-                </Grid.RowDefinitions>
-                <Grid.ColumnDefinitions>
-                    <ColumnDefinition Width="1*"/>
-                    <ColumnDefinition Width="1*"/>
-                    <ColumnDefinition Width="1*"/>
-                </Grid.ColumnDefinitions>
-                <Button x:Name="ForwardButton" Grid.Column="1" Text="&#8593;" FontSize="22"/>
-                <Button x:Name="RightButton" Grid.Row="1" Grid.Column="2" Text="&#8594;" FontSize="22"/>
-                <Button x:Name="LeftButton" Grid.Row="1" Text="&#8592;" FontSize="22"/>
-                <Button x:Name="BackButton" Grid.Row="2" Grid.Column="1" Text="&#8595;" FontSize="22"/>
-            </Grid>
+            <StackLayout x:Name="Stack1">
+                <Label Text="Włącz/Wyłącz tryb ręczny" HorizontalOptions="Center" VerticalOptions="Center"/>
+                <Switch x:Name="ManualSwitch" IsToggled="False" HorizontalOptions="Center" VerticalOptions="Center" Toggled="ManualSwitch_Toggled"></Switch>
+                <Grid HorizontalOptions="CenterAndExpand" VerticalOptions="CenterAndExpand">
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="1*"/>
+                        <RowDefinition Height="1*"/>
+                        <RowDefinition Height="1*"/>
+                    </Grid.RowDefinitions>
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="1*"/>
+                        <ColumnDefinition Width="1*"/>
+                        <ColumnDefinition Width="1*"/>
+                    </Grid.ColumnDefinitions>
+                    <Button x:Name="ForwardButton" Grid.Column="1" Text="&#8593;" FontSize="22" Pressed="ForwardButton_Pressed" Released="Button_Released"/>
+                    <Button x:Name="RightButton" Grid.Row="1" Grid.Column="2" Text="&#8594;" FontSize="22" Pressed="RightButton_Pressed" Released="Button_Released"/>
+                    <Button x:Name="LeftButton" Grid.Row="1" Text="&#8592;" FontSize="22" Pressed="LeftdButton_Pressed" Released="Button_Released"/>
+                    <Button x:Name="BackButton" Grid.Row="2" Grid.Column="1" Text="&#8595;" FontSize="22" Pressed="BackButton_Pressed" Released="Button_Released"/>
+                </Grid>
+            </StackLayout>
             <StackLayout Orientation="Horizontal" HorizontalOptions="Center">
                 <Label>Wartość PWM</Label>
                 <Label x:Name="PWMLabel" Text="80"></Label>
             </StackLayout>
-            <Slider x:Name="PWMSlider"  Value="100" Maximum="255" Minimum="80"  ValueChanged="PWMSlider_ValueChanged"></Slider>
+            <Slider x:Name="PWMSlider"  Value="100" Maximum="255" Minimum="80"  ValueChanged="PWMSlider_ValueChanged"  DragCompleted="PWMSlider_DragCompleted"></Slider>
         </StackLayout>
     </ContentPage.Content>
 </ContentPage>

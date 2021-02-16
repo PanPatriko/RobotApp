@@ -11,11 +11,12 @@ using Xamarin.Forms;
 using RobotApp.Views;
 using Android.Content;
 using Android;
-using Android.Support.V4.Content;
 using Android.Support.V4.App;
 using System.IO;
 using System.Diagnostics;
 using System.Threading.Tasks;
+using AndroidX.Core.App;
+using AndroidX.Core.Content;
 
 namespace RobotApp.Droid
 {

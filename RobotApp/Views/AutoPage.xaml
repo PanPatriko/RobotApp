@@ -5,22 +5,20 @@
              x:Class="RobotApp.Views.AutoPage"
              Title="Sterowanie automatyczne">
     <ContentPage.Content>
-        <Grid>
-            <Grid.RowDefinitions>
-                <RowDefinition Height="auto"/>
-                <RowDefinition Height="auto"/>
-                <RowDefinition Height="*"/>
-            </Grid.RowDefinitions>
-            <StackLayout>
+            <Grid x:Name="Grid1">
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="auto"/>
+                    <RowDefinition Height="auto"/>
+                    <RowDefinition Height="*"/>
+                </Grid.RowDefinitions>
                 <Label x:Name="stateLabel" Text="Status:"/>
-            </StackLayout>
-            <StackLayout Grid.Row="1" Orientation="Horizontal" HorizontalOptions="FillAndExpand">
-                <Label Text="Włącz/Wyłącz tryb automatyczny" HorizontalOptions="Center" VerticalOptions="Center"/>
-                <Switch x:Name="AutoSwitch" IsToggled="False" HorizontalOptions="Center" Toggled="AutoSwitch_Toggled"></Switch>
-                <Button Text="Zapisz mape" Clicked="Button_Clicked" />
-                <Button Clicked="Button_Clicked2"/>
-            </StackLayout>
-            <oxy:PlotView Grid.Row="2" Model="{Binding Model}" VerticalOptions="Center" HorizontalOptions="Center" />
-        </Grid>
+                <StackLayout x:Name="Stack1" Grid.Row="1" Orientation="Horizontal" HorizontalOptions="FillAndExpand">
+                    <Label Text="Włącz/Wyłącz tryb automatyczny" HorizontalOptions="Center" VerticalOptions="Center"/>
+                    <Switch x:Name="AutoSwitch" IsToggled="False" HorizontalOptions="Center" Toggled="AutoSwitch_Toggled"></Switch>
+                    <Button Text="Zapisz" Clicked="Button_Clicked" />
+                    <Button  x:Name="PauseButton" Text="Zatrzymaj" Clicked="Button_Clicked2"/>
+                </StackLayout>
+                <oxy:PlotView x:Name="Oxy" Grid.Row="2" Model="{Binding Model}" VerticalOptions="Center" HorizontalOptions="Center" />
+            </Grid>
     </ContentPage.Content>
 </ContentPage>

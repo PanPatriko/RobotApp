@@ -20,6 +20,8 @@ namespace RobotApp.Views
         ScatterSeries pointsSeries = new ScatterSeries();
         LineSeries lineSeries = new LineSeries();
         bool isManual = false;
+        bool pause = false;
+
         public AutoPage()
         {
             InitializeComponent();
@@ -71,13 +73,71 @@ namespace RobotApp.Views
             });
         }
 
+        protected override void OnSizeAllocated(double width, double height)
+        {
+            base.OnSizeAllocated(width, height);
+            if (width != WidthRequest || height != HeightRequest)
+            {
+                WidthRequest = width;
+                HeightRequest = height;
+                if (width > height)
+                {
+                    Grid1.RowDefinitions.Clear();
+                    Grid1.ColumnDefinitions.Clear();
+                    Grid1.RowDefinitions.Add(new RowDefinition { Height = new GridLength(1, GridUnitType.Auto) });
+                    Grid1.RowDefinitions.Add(new RowDefinition { Height = new GridLength(1, GridUnitType.Auto) });
+                    Grid1.ColumnDefinitions.Add(new ColumnDefinition { Width = new GridLength(1, GridUnitType.Star) });
+                    Grid1.ColumnDefinitions.Add(new ColumnDefinition { Width = new GridLength(5, GridUnitType.Star) });
+                    Grid1.Children.Remove(Stack1);
+                    Grid1.Children.Remove(Oxy);
+                    Grid1.Children.Remove(stateLabel);
+                    Grid1.Children.Add(stateLabel, 0, 0);
+                    stateLabel.SetValue(Grid.ColumnSpanProperty, 2);
+                    Grid1.Children.Add(Stack1, 0, 1);
+                    Grid1.Children.Add(Oxy, 1, 1);
+                    Stack1.Orientation = StackOrientation.Vertical;
+                }
+                else
+                {
+                    Grid1.RowDefinitions.Clear();
+                    Grid1.ColumnDefinitions.Clear();
+                    Grid1.RowDefinitions.Add(new RowDefinition { Height = new GridLength(1, GridUnitType.Auto) });
+                    Grid1.RowDefinitions.Add(new RowDefinition { Height = new GridLength(1, GridUnitType.Auto) });
+                    Grid1.RowDefinitions.Add(new RowDefinition { Height = new GridLength(1, GridUnitType.Star) });
+                    Grid1.Children.Remove(Stack1);
+                    Grid1.Children.Remove(Oxy);
+                    Grid1.Children.Remove(stateLabel);
+                    Grid1.Children.Add(stateLabel, 0, 0);
+                    Grid1.Children.Add(Stack1, 0, 1);
+                    Grid1.Children.Add(Oxy, 0, 2);
+                    Stack1.Orientation = StackOrientation.Horizontal;
+                }
+            }
+        }
+
         private void Button_Clicked2(object sender, EventArgs e)
         {
-            oxyPlotViewModel.Model.Series.Clear();
+            //oxyPlotViewModel.Model.Series.Clear();
             //  ScatterSeries pointsSeries = new ScatterSeries();
-            pointsSeries.Points.Add(new ScatterPoint(random.Next(-50, 51), random.Next(-50, 51),2.5));
-            oxyPlotViewModel.Model.Series.Add(pointsSeries);
-            oxyPlotViewModel.Model.InvalidatePlot(true);
+            //pointsSeries.Points.Add(new ScatterPoint(random.Next(-50, 51), random.Next(-50, 51),2.5));
+            // oxyPlotViewModel.Model.Series.Add(pointsSeries);
+            // oxyPlotViewModel.Model.InvalidatePlot(true);
+            if (DependencyService.Get<IBluetooth>().IsConnected() && AutoSwitch.IsToggled)
+            {
+                if(pause)
+                {
+                    DependencyService.Get<IBluetooth>().Write("E");
+                    PauseButton.Text = "Zatrzymaj";
+                    pause = false;
+                }
+                else
+                {
+                    DependencyService.Get<IBluetooth>().Write("D");
+                    PauseButton.Text = "Wznów";
+                    pause = true;
+                }
+            }
+
         }
 
         private void ClearOxyPlot()
@@ -129,6 +189,8 @@ namespace RobotApp.Views
                     Xamarin.Forms.MessagingCenter.Send(Xamarin.Forms.Application.Current, "AutoOFF", "");
                     DependencyService.Get<IBluetooth>().Write("S");
                     ClearOxyPlot();
+                    PauseButton.Text = "Zatrzymaj";
+                    pause = false;
                 }
             }
             else
@@ -140,15 +202,23 @@ namespace RobotApp.Views
         
         private async void Button_Clicked(object sender, EventArgs e)
         {
-            string result = await DisplayPromptAsync("Zapisz mape", "Jak chcesz nazwać mape?","OK","Anuluj");
-            if(result != null)
+            if(AutoSwitch.IsToggled && pause)
             {
-                MapItem map = new MapItem();
-                map.Name = result;
-                map.Points = pointsSeries.Points;
-                await App.Database.SaveMapAsync(map);
-                await DisplayAlert("", "Zapisano mape", "ok");
-                ClearOxyPlot();
+                string result = await DisplayPromptAsync("Zapisz mape", "Jak chcesz nazwać mape?", "OK", "Anuluj");
+                if (result != null)
+                {
+                    MapItem map = new MapItem();
+                    map.Name = result;
+                    map.Points = pointsSeries.Points;
+                    await App.Database.SaveMapAsync(map);
+                    await DisplayAlert("", "Zapisano mape", "OK");
+                    //ClearOxyPlot();
+                    AutoSwitch.IsToggled = false;
+                }
+            }
+            else if(AutoSwitch.IsToggled)
+            {
+                    await DisplayAlert("", "Aby zapisać mapę należy zatrzymać robota", "OK");              
             }
         }
     }
